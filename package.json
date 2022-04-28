@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://n8n.io",
   "scripts": {
+    "package_app": "lerna exec 'npm pack && mv ./*.tgz ../../'",
     "bootstrap": "lerna bootstrap --hoist --no-ci",
     "build": "lerna exec npm run build",
     "dev": "lerna exec npm run dev --parallel",
@@ -15,6 +16,7 @@
     "start": "run-script-os",
     "start:default": "cd packages/cli/bin && ./n8n",
     "start:windows": "cd packages/cli/bin && n8n",
+    "start:app": "cd packages/desktop-app && npm run start",
     "test": "lerna run test",
     "watch": "lerna run --parallel watch",
     "webhook": "./packages/cli/bin/n8n webhook",

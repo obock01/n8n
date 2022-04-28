@@ -34,3 +34,12 @@ function compileTheme() {
 function copyThemeFonts() {
 	return gulp.src('./theme/src/fonts/**').pipe(gulp.dest('./theme/dist/fonts'));
 }
+
+
+
+
+
+
+
+
+

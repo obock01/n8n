@@ -10,6 +10,13 @@ import {
 	NodeApiError,
 	NodeOperationError,
 } from 'n8n-workflow';
+import { DLAuthenticationProvider, TokenRequest } from './AzureReqLibrary';
+
+import { AuthenticationProvider, Client, ClientOptions, FileObject, LargeFileUploadTask, StreamUpload } from '@microsoft/microsoft-graph-client';
+import { ConfidentialClientApplication, Configuration, LogLevel } from '@azure/msal-node';
+import { createReadStream, readFileSync, statSync } from 'fs';
+import crypto from 'crypto';
+
 
 import { OptionsWithUri } from 'request';
 
@@ -23,137 +30,56 @@ interface OptionDataParamters {
 }
 
 
-export class HttpRequest implements INodeType {
+export class AzureHttpRequest implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'HTTP Request',
-		name: 'httpRequest',
-		icon: 'fa:at',
+		displayName: 'Azure HTTP Request',
+		name: 'azureHttpRequest',
+		icon: 'file:AzureHttpRequest.svg',
 		group: ['input'],
 		version: 1,
 		subtitle: '={{$parameter["requestMethod"] + ": " + $parameter["url"]}}',
 		description: 'Makes an HTTP request and returns the response data',
 		defaults: {
-			name: 'HTTP Request',
+			name: 'Azure HTTP Request',
 			color: '#2200DD',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
-		credentials: [
-			{
-				name: 'httpBasicAuth',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'basicAuth',
-						],
-					},
-				},
-			},
-			{
-				name: 'httpCertAuth',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'certAuth',
-						],
-					},
-				},
-			},
-			{
-				name: 'httpDigestAuth',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'digestAuth',
-						],
-					},
-				},
-			},
-			{
-				name: 'httpHeaderAuth',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'headerAuth',
-						],
-					},
-				},
-			},
-			{
-				name: 'httpQueryAuth',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'queryAuth',
-						],
-					},
-				},
-			},
-			{
-				name: 'oAuth1Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth1',
-						],
-					},
-				},
-			},
-			{
-				name: 'oAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
-		],
 		properties: [
 			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Basic Auth',
-						value: 'basicAuth',
-					},
-					{
-						name: 'Digest Auth',
-						value: 'digestAuth',
-					},
-					{
-						name: 'Header Auth',
-						value: 'headerAuth',
-					},
-					{
-						name: 'Query Auth',
-						value: 'queryAuth',
-					},
-					{
-						name: 'OAuth1',
-						value: 'oAuth1',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-					{
-						name: 'None',
-						value: 'none',
-					},
-				],
-				default: 'none',
-				description: 'The way to authenticate.',
+				displayName: 'Cert Thumb Print',
+				name: 'certThumbPrint',
+				type: 'string',
+				default: 'D0DD142EC0EDDBF5529CE7E5F306F31427E80DB8',
+				description: 'The certificate thumb print to use for authentication.',
+			},
+			{
+				displayName: 'Azure App ID',
+				name: 'azureAppId',
+				type: 'string',
+				default: '15304609-426d-4c9d-9263-a24f423f49b5',
+				description: 'The Azure App ID to use for authentication.',
+			},
+			{
+				displayName: 'Azure Tenant ID',
+				name: 'azureTenantId',
+				type: 'string',
+				default: '626fe8b4-730f-4b18-9ec6-ac8e5be6ddf6',
+				description: 'The Azure Tenant ID to use for authentication.',
+			},
+			{
+				displayName: 'Certificate Contents',
+				name: 'certificateContents',
+				type: 'string',
+				default: '-----BEGIN ENCRYPTED PRIVATE KEY-----\nMIIFLTBXBgkqhkiG9w0BBQ0wSjApBgkqhkiG9w0BBQwwHAQIr586uwLaGXQCAggA\nMAwGCCqGSIb3DQIJBQAwHQYJYIZIAWUDBAEqBBBzeKk1WkaaT+/KSkD7knc4BIIE\n0EvUsjWVo1qHQnWK+z/enBXmiCuFEFWyfMyXDGhrktPh83oO+TY2NWJZrDd75OY6\nNjGjZglyy53Jfz1j8AWCUhBZQyI2Q3KNIA1NpI5psiRHivtIBFd676OgI7t1D4jQ\n/l0YSrroQIms9LVHR8hySR3gX/Umf0QhlxlzhBykmmC0Pya0grM5sLdWje8mdHDF\nQn0i4o2n9wlxZp1pD5tKtKy4RcNKTynImSlt6qAY+J1PBcE2KvEbIr/Kg1uAa0YG\nkPY//6vbm9/ekJ1iGHTlArd9WyYUWrDQU467F4cPIGQm/CSjmPzjlHQdzLqXoyk7\nQmAUSwX/eQGoISpgDM/Q0Hy21c3IbiiZDFMhEq+1F4zKuqWR05efbJbiEqN9Ikxz\nnke1EXIIdC+8CERjG3kI4Q58Pe41iem/hNumLOZf+cBz7Vy3fEEpZLeVRPMq6Q7z\nmmKCmhMBgHs5C0/FJ8ARxT+eT+I0vLHS8kRT2AH+rOFqJ+QITcfkBFESZlG6mVSo\nrgz/xkGDOL/zOAER8YjuJYQNgTDpWuiueRtqXUT4CO7HSi1Ek9dtCrf+aghOj5D7\nQdjntMaeBVW9ENaJE2fV0D3rsZByLi3zkAY//nKxEnQV/Y7CQ+ZZceabWbZ9YMA/\nNgcFlrG3L2qoiSbNauOKdbYswBcXwTfI9k/rGdMnk1ZiO0t6yJCY76UgEJFzdMQO\nSS8/cXGEjNdpvkbutP+VJcxjDfOH9on/oWaSnRobeURgylH8ULro9/XDW00a4SPA\n29brc7pgG+jrFtxLqE/ImP5gHEhaiLUs+D76Q7Xk5CwbGC9SSvVEefhxOV9KsXs4\neuTq6AIxomHUlj0HbM20oCQOI4s31j7GoPKdV5lGwAIQC91IGGFQPCStCdKnJJLw\nkxtKDVQ379K8g7IKDPzmTD2XiANCDqXChusa5FQA5p+VqY0W/Y7NzXenfDb9V1EC\n5ofIKsVn2hPo4SBY0Ng6HXEdE5MJ9Oo7QuNA1xYrNVKvYGmfo8yS/QNsg9oGFE1b\nkEOOmBIqjrM447s/Kztm1Q6lFbkRV8Rc164popP31oIJi3AjUyXGstcZvjCraY4r\nOGZNvMWLv+6yaJ4I2j32HzVcYnxBt5hdCgStmK4Yq4oa/1WhEt1+lTSu/2rSFxSw\nyX0oSFO5exm9iAZ3lr30WuNfJ2BQpbkoEJzNX34QJ1LNUcp7kTlHHXcOYP5HNzB/\n9EnplSjmHKcP/3yotb39LFDxc7c8QW9L632iWPsYgdRY7hJNPTV0weUqATzpC4xz\nGX6zwVdJyDeQUwTy7Kqz1pZZrOV0yHo4OPARpPw1iWmG6TyjsmzmyvcQ625AJotg\nUJvJh5ctr3gDkjeU+fgpnOUaTtEWgIoWw/FPcrou6qk77oFXsiFiBifDDUoS++7/\nCDMv+Vcw1UrYqvo0cGt3m1+JHn00h34HxE9aQL8LEMLZB9NKjSX0NyJZsDr044O8\ngh9JLswuhZ7hkyOao7eqFkAoQqGodZlo51QfiCzxFW4ViZSEjgCMbWXtvHiUjKYl\nT+bO+QJyXoBgVVQHkV9nUlFHFte0mE0Mkl3zgYmvSgw3x6WR6xHiak0bkBvec80V\nR8Ps+heWx9mMEQMU3YgJ7wztx3fXe1BZduixYL3JHlLR\n-----END ENCRYPTED PRIVATE KEY-----',
+				description: 'String contents of the certificate to use for authentication.',
+			},
+			{
+				displayName: 'Certificate Passcode',
+				name: 'certificatePassphrase',
+				type: 'string',
+				default: 'Npx9995',
+				description: 'Decryption password',
 			},
 			{
 				displayName: 'Request Method',
@@ -668,44 +594,14 @@ export class HttpRequest implements INodeType {
 		const requestMethod = this.getNodeParameter('requestMethod', 0) as string;
 		const parametersAreJson = this.getNodeParameter('jsonParameters', 0) as boolean;
 		const responseFormat = this.getNodeParameter('responseFormat', 0) as string;
+		const reqHandler = new DLAuthenticationProvider({
+			azureTenantId: this.getNodeParameter('azureTenantId', 0, '') as string,
+			azureAppId: this.getNodeParameter('azureAppId', 0, '') as string,
+			certThumbPrint: this.getNodeParameter('certThumbPrint', 0, '') as string,
+			certificateContents: this.getNodeParameter('certificateContents', 0, '') as string,
+			certificatePassphrase: this.getNodeParameter('certificatePassphrase', 0, '') as string,
+		});
 
-		let httpBasicAuth;
-		let httpDigestAuth;
-		let httpHeaderAuth;
-		let httpQueryAuth;
-		let oAuth1Api;
-		let oAuth2Api;
-
-		try {
-			httpBasicAuth = await this.getCredentials('httpBasicAuth');
-		} catch (error) {
-			// Do nothing
-		}
-		try {
-			httpDigestAuth = await this.getCredentials('httpDigestAuth');
-		} catch (error) {
-			// Do nothing
-		}
-		try {
-			httpHeaderAuth = await this.getCredentials('httpHeaderAuth');
-		} catch (error) {
-			// Do nothing
-		}
-		try {
-			httpQueryAuth = await this.getCredentials('httpQueryAuth');
-		} catch (error) {
-			// Do nothing
-		}
-		try {
-			oAuth1Api = await this.getCredentials('oAuth1Api');
-		} catch (error) {
-			// Do nothing
-		}
-		try {
-			oAuth2Api = await this.getCredentials('oAuth2Api');
-		} catch (error) {
-			// Do nothing
-		}
 
 		let requestOptions: OptionsWithUri;
 		let setUiParameter: IDataObject;
@@ -727,7 +623,7 @@ export class HttpRequest implements INodeType {
 			},
 			queryParametersJson: {
 				name: 'qs',
-				displayName: 'Query Paramters',
+				displayName: 'Query Parameters',
 			},
 		};
 
@@ -948,29 +844,10 @@ export class HttpRequest implements INodeType {
 				requestOptions.headers['Content-Type'] = options.bodyContentCustomMimeType;
 			}
 
-			// Add credentials if any are set
-			if (httpBasicAuth !== undefined) {
-				requestOptions.auth = {
-					user: httpBasicAuth.user as string,
-					pass: httpBasicAuth.password as string,
-				};
-			}
-			if (httpHeaderAuth !== undefined) {
-				requestOptions.headers![httpHeaderAuth.name as string] = httpHeaderAuth.value;
-			}
-			if (httpQueryAuth !== undefined) {
-				if (!requestOptions.qs) {
-					requestOptions.qs = {};
-				}
-				requestOptions.qs![httpQueryAuth.name as string] = httpQueryAuth.value;
-			}
-			if (httpDigestAuth !== undefined) {
-				requestOptions.auth = {
-					user: httpDigestAuth.user as string,
-					pass: httpDigestAuth.password as string,
-					sendImmediately: false,
-				};
-			}
+			const token = await reqHandler.getAccessToken();
+			requestOptions.auth = {
+				bearer: token,
+			};
 
 			if (requestOptions.headers!['accept'] === undefined) {
 				if (responseFormat === 'json') {
@@ -994,14 +871,7 @@ export class HttpRequest implements INodeType {
 				this.sendMessageToUI(sendRequest);
 			} catch (e) { }
 
-			// Now that the options are all set make the actual http request
-			if (oAuth1Api !== undefined) {
-				requestPromises.push(this.helpers.requestOAuth1.call(this, 'oAuth1Api', requestOptions));
-			} else if (oAuth2Api !== undefined) {
-				requestPromises.push(this.helpers.requestOAuth2.call(this, 'oAuth2Api', requestOptions, { tokenType: 'Bearer' }));
-			} else {
-				requestPromises.push(this.helpers.request(requestOptions));
-			}
+			requestPromises.push(this.helpers.request(requestOptions));
 		}
 
 		// @ts-ignore
