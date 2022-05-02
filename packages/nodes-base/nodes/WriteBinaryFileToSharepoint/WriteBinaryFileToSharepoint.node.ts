@@ -12,7 +12,7 @@ import {
 import {
 	writeFile as fsWriteFile,
 } from 'fs/promises';
-import { uploadStream } from "./FileUploaderPlugin";
+import { uploadStream } from './FileUploaderPlugin';
 
 
 export class WriteBinaryFileToSharepoint implements INodeType {

@@ -15,7 +15,7 @@ services:
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
 
   n8n:
-    image: n8nio/n8n
+    image: ocdev.azurecr.io/n8n-custom:latest
     restart: always
     environment:
       - DB_TYPE=postgresdb
@@ -24,15 +24,26 @@ services:
       - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
       - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER
-      - N8N_BASIC_AUTH_PASSWORD
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_SAVE_ON_PROGRESS=true
+      - N8N_METRICS=true
+      - N8N_EMAIL_MODE=smtp
+      - N8N_SMTP_HOST=172.16.12.12
+      - N8N_SMTP_PORT=2525
+      - N8N_SMTP_SSL=false
+      - N8N_SMTP_SENDER=no-reply@outdoorcap.com
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=false
+      - N8N_BINARY_DATA_STORAGE_PATH=/n8n_data
+      - N8N_HIRING_BANNER_ENABLED=false
     ports:
       - 5678:5678
     links:
       - postgres
     volumes:
-      - ~/.n8n:/home/node/.n8n
+      - /opt/docker-apps/n8n/n8n_config:/home/node/.n8n
+      - /opt/docker-apps/n8n/n8n_data:/n8n_data
     # Wait 5 seconds to start n8n to make sure that PostgreSQL is ready
     # when n8n tries to connect to it
-    command: /bin/sh -c "sleep 5; n8n start"
+    command: /bin/sh -c "sleep 5; /data/packages/cli/bin/n8n start"
