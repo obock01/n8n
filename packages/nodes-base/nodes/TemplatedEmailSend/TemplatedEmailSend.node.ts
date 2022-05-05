@@ -86,6 +86,13 @@ export class TemplatedEmailSend implements INodeType {
 				description: 'Force send as HTML.',
 			},
 			{
+				displayName: 'Template Data Source',
+				name: 'templateDataSource',
+				type: 'string',
+				default: '',
+				description: 'The data source to use for the template.',
+			},
+			{
 				displayName: 'Text',
 				name: 'text',
 				type: 'string',
@@ -144,6 +151,10 @@ export class TemplatedEmailSend implements INodeType {
 				const attachmentPropertyString = this.getNodeParameter('attachments', itemIndex) as string;
 				const options = this.getNodeParameter('options', itemIndex, {}) as IDataObject;
 				const sendAsHtml = this.getNodeParameter('sendAsHtml', itemIndex) as boolean;
+				const templateDataSource = this.getNodeParameter('templateDataSource', itemIndex) as string;
+
+
+
 
 				const credentials = await this.getCredentials('smtp');
 
@@ -173,7 +184,8 @@ export class TemplatedEmailSend implements INodeType {
 
 				const template = Handlebars.compile(text);
 
-				const emailText = template(item.json);
+				const templateData = templateDataSource?.length > 0 ? item.json[templateDataSource] : item.json;
+				const emailText = template(templateData);
 
 				const baseOptions = {
 					from: fromEmail,
