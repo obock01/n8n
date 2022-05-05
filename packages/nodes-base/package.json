@@ -329,7 +329,6 @@
       "dist/credentials/ZulipApi.credentials.js"
     ],
     "nodes": [
-
       "dist/nodes/ActionNetwork/ActionNetwork.node.js",
       "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
       "dist/nodes/ActiveCampaign/ActiveCampaignTrigger.node.js",
@@ -643,6 +642,7 @@
       "dist/nodes/Tapfiliate/Tapfiliate.node.js",
       "dist/nodes/Telegram/Telegram.node.js",
       "dist/nodes/Telegram/TelegramTrigger.node.js",
+      "dist/nodes/TemplatedEmailSend.node.js",
       "dist/nodes/TheHive/TheHive.node.js",
       "dist/nodes/TheHive/TheHiveTrigger.node.js",
       "dist/nodes/TimescaleDb/TimescaleDb.node.js",
@@ -746,6 +746,8 @@
     "formidable": "^1.2.1",
     "get-system-fonts": "^2.0.2",
     "gm": "^1.23.1",
+    "handlebars": "^4.7.7",
+    "html-to-formatted-text": "^2.7.0",
     "iconv-lite": "^0.6.2",
     "ics": "^2.27.0",
     "imap-simple": "^4.3.0",
