@@ -93,6 +93,13 @@ export class TemplatedEmailSend implements INodeType {
 				description: 'The data source to use for the template.',
 			},
 			{
+				displayName: 'Use Dot Notation',
+				name: 'useDotNotation',
+				type: 'boolean',
+				default: false,
+				description: 'Use dot notation for the template data source.',
+			},
+			{
 				displayName: 'Text',
 				name: 'text',
 				type: 'string',
@@ -152,7 +159,7 @@ export class TemplatedEmailSend implements INodeType {
 				const options = this.getNodeParameter('options', itemIndex, {}) as IDataObject;
 				const sendAsHtml = this.getNodeParameter('sendAsHtml', itemIndex) as boolean;
 				const templateDataSource = this.getNodeParameter('templateDataSource', itemIndex) as string;
-
+				const useDotNotation = this.getNodeParameter('useDotNotation', itemIndex) as boolean;
 
 
 
@@ -184,7 +191,26 @@ export class TemplatedEmailSend implements INodeType {
 
 				const template = Handlebars.compile(text);
 
-				const templateData = templateDataSource?.length > 0 ? item.json[templateDataSource] : item.json;
+				function getTemplateData() {
+					// tslint:disable-next-line:no-any
+					let container = item.json as any;
+					const templateDataSrc = templateDataSource?.trim() ?? '';
+
+					if(templateDataSrc?.length > 0) {
+						if(useDotNotation) {
+							templateDataSrc.split('.').forEach(key => {
+								container = container[key];
+							});
+							return container;
+						}else {
+							return container[templateDataSrc];
+						}
+					}else {
+						return container;
+					}
+				}
+
+				const templateData = getTemplateData();
 				const emailText = template(templateData);
 
 				const baseOptions = {
