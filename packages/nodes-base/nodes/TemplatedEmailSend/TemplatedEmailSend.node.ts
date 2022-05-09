@@ -10,7 +10,8 @@ import {
 import { createTransport } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import Mail from 'nodemailer/lib/mailer';
-import Handlebars from "handlebars";
+import Handlebars from 'handlebars';
+import { createMimeMessage } from 'mimetext';
 
 import htmlToFormattedText from 'html-to-formatted-text';
 
@@ -31,7 +32,11 @@ export class TemplatedEmailSend implements INodeType {
 		credentials: [
 			{
 				name: 'smtp',
-				required: true,
+				required: false,
+			},
+			{
+				name: 'azureSecret',
+				required: false,
 			},
 		],
 		properties: [
