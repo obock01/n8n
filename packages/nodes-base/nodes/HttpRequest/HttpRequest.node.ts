@@ -153,7 +153,7 @@ export class HttpRequest implements INodeType {
 					},
 				],
 				default: 'none',
-				description: 'The way to authenticate.',
+				description: 'The way to authenticate',
 			},
 			{
 				displayName: 'Request Method',
@@ -190,7 +190,7 @@ export class HttpRequest implements INodeType {
 					},
 				],
 				default: 'GET',
-				description: 'The request method to use.',
+				description: 'The request method to use',
 			},
 			{
 				displayName: 'URL',
@@ -198,7 +198,7 @@ export class HttpRequest implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: 'http://example.com/index.html',
-				description: 'The URL to make the request to.',
+				description: 'The URL to make the request to',
 				required: true,
 			},
 			{
@@ -206,7 +206,8 @@ export class HttpRequest implements INodeType {
 				name: 'allowUnauthorizedCerts',
 				type: 'boolean',
 				default: false,
-				description: 'Still download the response even if SSL certificate validation is not possible.',
+				// eslint-disable-next-line n8n-nodes-base/node-param-description-wrong-for-ignore-ssl-issues
+				description: 'Whether to download the response even if SSL certificate validation is not possible',
 			},
 			{
 				displayName: 'Response Format',
@@ -227,7 +228,7 @@ export class HttpRequest implements INodeType {
 					},
 				],
 				default: 'json',
-				description: 'The format in which the data gets returned from the URL.',
+				description: 'The format in which the data gets returned from the URL',
 			},
 			{
 				displayName: 'Property Name',
@@ -242,7 +243,7 @@ export class HttpRequest implements INodeType {
 						],
 					},
 				},
-				description: 'Name of the property to which to write the response data.',
+				description: 'Name of the property to which to write the response data',
 			},
 			{
 				displayName: 'Binary Property',
@@ -257,7 +258,7 @@ export class HttpRequest implements INodeType {
 						],
 					},
 				},
-				description: 'Name of the binary property to which to write the data of the read file.',
+				description: 'Name of the binary property to which to write the data of the read file',
 			},
 
 			{
@@ -265,7 +266,7 @@ export class HttpRequest implements INodeType {
 				name: 'jsonParameters',
 				type: 'boolean',
 				default: false,
-				description: 'If the query and/or body parameter should be set via the value-key pair UI or JSON/RAW.',
+				description: 'If the query and/or body parameter should be set via the value-key pair UI or JSON/RAW',
 			},
 
 			{
@@ -327,35 +328,35 @@ export class HttpRequest implements INodeType {
 							},
 						],
 						default: 'json',
-						description: 'Content-Type to use to send body parameters.',
+						description: 'Content-Type to use to send body parameters',
 					},
 					{
 						displayName: 'Full Response',
 						name: 'fullResponse',
 						type: 'boolean',
 						default: false,
-						description: 'Returns the full reponse data instead of only the body.',
+						description: 'Returns the full reponse data instead of only the body',
 					},
 					{
 						displayName: 'Follow All Redirects',
 						name: 'followAllRedirects',
 						type: 'boolean',
 						default: false,
-						description: 'Follow non-GET HTTP 3xx redirects.',
+						description: 'Follow non-GET HTTP 3xx redirects',
 					},
 					{
 						displayName: 'Follow GET Redirect',
 						name: 'followRedirect',
 						type: 'boolean',
 						default: true,
-						description: 'Follow GET HTTP 3xx redirects.',
+						description: 'Follow GET HTTP 3xx redirects',
 					},
 					{
 						displayName: 'Ignore Response Code',
 						name: 'ignoreResponseCode',
 						type: 'boolean',
 						default: false,
-						description: 'Succeeds also when status code is not 2xx.',
+						description: 'Succeeds also when status code is not 2xx',
 					},
 					{
 						displayName: 'MIME Type',
@@ -363,8 +364,7 @@ export class HttpRequest implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'text/xml',
-						description: 'Specify the mime type for raw/custom body type.',
-						required: false,
+						description: 'Specify the mime type for raw/custom body type',
 						displayOptions: {
 							show: {
 								'/requestMethod': [
@@ -381,14 +381,14 @@ export class HttpRequest implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'http://myproxy:3128',
-						description: 'HTTP proxy to use.',
+						description: 'HTTP proxy to use',
 					},
 					{
 						displayName: 'Split Into Items',
 						name: 'splitIntoItems',
 						type: 'boolean',
 						default: false,
-						description: 'Outputs each element of an array as own item.',
+						description: 'Outputs each element of an array as own item',
 						displayOptions: {
 							show: {
 								'/responseFormat': [
@@ -405,14 +405,14 @@ export class HttpRequest implements INodeType {
 							minValue: 1,
 						},
 						default: 10000,
-						description: 'Time in ms to wait for the server to send response headers (and start the response body) before aborting the request.',
+						description: 'Time in ms to wait for the server to send response headers (and start the response body) before aborting the request',
 					},
 					{
 						displayName: 'Use Querystring',
 						name: 'useQueryString',
 						type: 'boolean',
 						default: false,
-						description: 'Set this option to true if you need arrays to be serialized as foo=bar&foo=baz instead of the default foo[0]=bar&foo[1]=baz.',
+						description: 'Set this option to true if you need arrays to be serialized as foo=bar&foo=baz instead of the default foo[0]=bar&foo[1]=baz',
 					},
 				],
 			},
@@ -440,7 +440,7 @@ export class HttpRequest implements INodeType {
 					},
 				},
 				default: false,
-				description: 'If binary data should be send as body.',
+				description: 'If binary data should be send as body',
 			},
 			{
 				displayName: 'Binary Property',
@@ -465,7 +465,7 @@ export class HttpRequest implements INodeType {
 						],
 					},
 				},
-				description: `Name of the binary property which contains the data for the file to be uploaded. For Form-Data Multipart, they can be provided in the format: <code>"sendKey1:binaryProperty1,sendKey2:binaryProperty2</code>`,
+				description: 'Name of the binary property which contains the data for the file to be uploaded. For Form-Data Multipart, they can be provided in the format: <code>"sendKey1:binaryProperty1,sendKey2:binaryProperty2</code>',
 			},
 			{
 				displayName: 'Body Parameters',
@@ -490,7 +490,7 @@ export class HttpRequest implements INodeType {
 					},
 				},
 				default: '',
-				description: 'Body parameters as JSON or RAW.',
+				description: 'Body parameters as JSON or RAW',
 			},
 			{
 				displayName: 'Body Parameters',
@@ -513,7 +513,7 @@ export class HttpRequest implements INodeType {
 						],
 					},
 				},
-				description: 'The body parameter to send.',
+				description: 'The body parameter to send',
 				default: {},
 				options: [
 					{
@@ -525,14 +525,14 @@ export class HttpRequest implements INodeType {
 								name: 'name',
 								type: 'string',
 								default: '',
-								description: 'Name of the parameter.',
+								description: 'Name of the parameter',
 							},
 							{
 								displayName: 'Value',
 								name: 'value',
 								type: 'string',
 								default: '',
-								description: 'Value of the parameter.',
+								description: 'Value of the parameter',
 							},
 						],
 					},
@@ -552,7 +552,7 @@ export class HttpRequest implements INodeType {
 					},
 				},
 				default: '',
-				description: 'Header parameters as JSON or RAW.',
+				description: 'Header parameters as JSON or RAW',
 			},
 			{
 				displayName: 'Headers',
@@ -569,7 +569,7 @@ export class HttpRequest implements INodeType {
 						],
 					},
 				},
-				description: 'The headers to send.',
+				description: 'The headers to send',
 				default: {},
 				options: [
 					{
@@ -581,14 +581,14 @@ export class HttpRequest implements INodeType {
 								name: 'name',
 								type: 'string',
 								default: '',
-								description: 'Name of the header.',
+								description: 'Name of the header',
 							},
 							{
 								displayName: 'Value',
 								name: 'value',
 								type: 'string',
 								default: '',
-								description: 'Value to set for the header.',
+								description: 'Value to set for the header',
 							},
 						],
 					},
@@ -608,7 +608,7 @@ export class HttpRequest implements INodeType {
 					},
 				},
 				default: '',
-				description: 'Query parameters as JSON (flat object).',
+				description: 'Query parameters as JSON (flat object)',
 			},
 			{
 				displayName: 'Query Parameters',
@@ -625,7 +625,7 @@ export class HttpRequest implements INodeType {
 						],
 					},
 				},
-				description: 'The query parameter to send.',
+				description: 'The query parameter to send',
 				default: {},
 				options: [
 					{
@@ -637,14 +637,14 @@ export class HttpRequest implements INodeType {
 								name: 'name',
 								type: 'string',
 								default: '',
-								description: 'Name of the parameter.',
+								description: 'Name of the parameter',
 							},
 							{
 								displayName: 'Value',
 								name: 'value',
 								type: 'string',
 								default: '',
-								description: 'Value of the parameter.',
+								description: 'Value of the parameter',
 							},
 						],
 					},
