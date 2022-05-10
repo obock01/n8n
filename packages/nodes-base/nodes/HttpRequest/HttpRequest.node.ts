@@ -51,17 +51,6 @@ export class HttpRequest implements INodeType {
 				},
 			},
 			{
-				name: 'httpCertAuth',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'certAuth',
-						],
-					},
-				},
-			},
-			{
 				name: 'httpDigestAuth',
 				required: true,
 				displayOptions: {
