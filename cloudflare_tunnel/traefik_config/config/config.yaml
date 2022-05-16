@@ -15,9 +15,9 @@ entryPoints:
         readTimeout: 42s
         writeTimeout: 42s
         idleTimeout: 42s
-    proxyProtocol:
-      insecure: true
     forwardedHeaders:
+      insecure: true
+    proxyProtocol:
       insecure: true
   websecure:
     address: ':443'
@@ -25,14 +25,13 @@ entryPoints:
       tls: {}
     forwardedHeaders:
       insecure: true
+    proxyProtocol:
+      insecure: true
     transport:
       respondingTimeouts:
         readTimeout: 42s
         writeTimeout: 42s
         idleTimeout: 42s
-      proxyProtocol:
-        insecure: true
-
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
