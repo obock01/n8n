@@ -12,6 +12,7 @@ services:
     ports:
       - "5572:5572"
     labels:
+      - traefik.enable=true
       - traefik.http.routers.n8n.rule=Host(`rclone.ocproxy.net`)
       - traefik.http.services.n8n-service.loadbalancer.server.port=5572
     volumes:
@@ -41,6 +42,7 @@ services:
     restart: always
     user: "0"
     labels:
+      - traefik.enable=true
       - traefik.http.routers.n8n.rule=Host(`n8n.ocproxy.net`)
       - traefik.http.services.n8n-service.loadbalancer.server.port=5678
     environment:
