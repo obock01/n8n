@@ -28,6 +28,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./traefik_config/config/config.yaml:/etc/traefik/traefik.yml"
+      - "./traefik_config/config/dynamic_config.yaml:/config/dynamic_config.yaml"
       - "./traefik_config/certs:/certs"
 networks:
   tunnel:
