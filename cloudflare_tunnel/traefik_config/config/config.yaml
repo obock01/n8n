@@ -49,3 +49,5 @@ providers:
   file:
     watch: true
     filename: "/config/dynamic_config.yaml"
+api:
+  dashboard: true
