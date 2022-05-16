@@ -7,6 +7,11 @@ serversTransport:
     dialTimeout: 42s
     responseHeaderTimeout: 42s
     idleConnTimeout: 42s
+log:
+  filePath: "/logs/traefik.log"
+  level: DEBUG
+accessLog:
+  filePath: "/logs/access.log"
 entryPoints:
   web:
     address: ":80"

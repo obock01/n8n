@@ -5,16 +5,20 @@ services:
     container_name: cloudflare_tunnel
     image: cloudflare/cloudflared:latest
     restart: always
-    command:
-      - "tunnel run"
+    command: tunnel run --logfile /logs/cloudflared.log --loglevel info --transport-loglevel info
     networks:
       - tunnel
       - default
     volumes:
       - ./cloudflare_config:/etc/cloudflared
+      - /opt/docker-apps/proxy/cloudflare_logs:/logs
   traefik:
+    restart: always
     image: "traefik:v2.6"
     container_name: "traefik"
+    user: "0"
+    environment:
+      - TZ=America/Chicago
     networks:
       - tunnel
       - default
@@ -27,6 +31,7 @@ services:
       - "traefik.http.routers.dashboard.service=api@internal"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/opt/docker-apps/proxy/traefik_logs:/logs"
       - "./traefik_config/config/config.yaml:/etc/traefik/traefik.yml"
       - "./traefik_config/config/dynamic_config.yaml:/config/dynamic_config.yaml"
       - "./traefik_config/certs:/certs"
