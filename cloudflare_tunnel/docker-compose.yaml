@@ -3,6 +3,7 @@ version: '3'
 services:
   tunnel:
     container_name: cloudflare_tunnel
+    user: "0"
     image: cloudflare/cloudflared:latest
     restart: always
     command: tunnel --logfile /logs/cloudflared.log --loglevel info --transport-loglevel info run
