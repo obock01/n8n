@@ -1,6 +1,4 @@
 version: '3.1'
-
-
 services:
   rclone:
     image: rclone/rclone
@@ -12,9 +10,9 @@ services:
     ports:
       - "5572:5572"
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.rclone.rule=Host(`rclone.ocproxy.net`)
-      - traefik.http.services.rclone-service.loadbalancer.server.port=5572
+      - "traefik.enable=true"
+      - "traefik.http.routers.rclone.rule=Host(`rclone.ocproxy.net`)"
+      - "traefik.http.services.rclone-service.loadbalancer.server.port=5572"
     volumes:
       - /opt/docker-apps/n8n/rclone_app/conf:/config/rclone
       - /opt/docker-apps/n8n/rclone_app/logs:/logs
@@ -36,15 +34,15 @@ services:
       - POSTGRES_NON_ROOT_PASSWORD
     volumes:
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
-      - n8nPGVolume:/var/lib/postgresql
+      - n8nPGVolume:/var/lib/postgresql/data
   n8n:
     image: ocdev.azurecr.io/n8n-custom:latest
     restart: always
     user: "0"
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.n8n.rule=Host(`n8n.ocproxy.net`)
-      - traefik.http.services.n8n-service.loadbalancer.server.port=5678
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.ocproxy.net`)"
+      - "traefik.http.services.n8n-service.loadbalancer.server.port=5678"
     environment:
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres
@@ -82,8 +80,6 @@ services:
       - /opt/docker-apps/n8n/n8n_config:/home/node/.n8n
       - /opt/docker-apps/n8n/n8n_data:/n8n_data
       - /opt/docker-apps/n8n/n8n_nodes:/custom_nodes
-    # Wait 5 seconds to start n8n to make sure that PostgreSQL is ready
-    # when n8n tries to connect to it
     command: /bin/sh -c "sleep 5; /data/packages/cli/bin/n8n start"
 
 volumes:
