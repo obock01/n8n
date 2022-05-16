@@ -6,7 +6,7 @@ services:
     image: cloudflare/cloudflared:latest
     restart: always
     command:
-      - "tunnel start"
+      - "tunnel run"
     networks:
       - tunnel
       - default
