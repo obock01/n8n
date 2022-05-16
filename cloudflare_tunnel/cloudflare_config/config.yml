@@ -3,16 +3,15 @@ credentials-file: /etc/cloudflared/fca808e7-c289-4a06-be00-73a26d24cbf4.json
 warp-routing:
   enabled: true
 ingress:
-  - service: https://localhost:443
+  - service: https://traefik:443
+#  - service: https://localhost:443
   # Rules map traffic from a hostname to a local service:
-  - hostname: example.com
-    service: https://localhost:8000
+#  - hostname: example.com
+#    service: https://localhost:8000
   # Rules can match the request's path to a regular expression:
-  - hostname: static.example.com
-    path: /*.(jpg|png|css|js)
-    service: https://localhost:8001
+#  - hostname: static.example.com
+#    path: /*.(jpg|png|css|js)
+#    service: https://localhost:8001
   # Rules can match the request's hostname to a wildcard character:
-  - hostname: '*.example.com'
-    service: https://localhost:8002
-  # An example of a catch-all rule:
-  - service: https://localhost:8003
+#  - hostname: '*.example.com'
+#    service: https://localhost:8002
