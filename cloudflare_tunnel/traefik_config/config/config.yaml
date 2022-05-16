@@ -50,4 +50,5 @@ providers:
     watch: true
     filename: "/config/dynamic_config.yaml"
 api:
+  insecure: true
   dashboard: true

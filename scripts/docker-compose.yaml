@@ -13,8 +13,8 @@ services:
       - "5572:5572"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.n8n.rule=Host(`rclone.ocproxy.net`)
-      - traefik.http.services.n8n-service.loadbalancer.server.port=5572
+      - traefik.http.routers.rclone.rule=Host(`rclone.ocproxy.net`)
+      - traefik.http.services.rclone-service.loadbalancer.server.port=5572
     volumes:
       - /opt/docker-apps/n8n/rclone_app/conf:/config/rclone
       - /opt/docker-apps/n8n/rclone_app/logs:/logs
