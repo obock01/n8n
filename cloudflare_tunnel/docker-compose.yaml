@@ -5,6 +5,9 @@ services:
     container_name: cloudflare_tunnel
     image: cloudflare/cloudflared:latest
     restart: always
+    networks:
+      - tunnel
+      - internal
     volumes:
       - ./cloudflare_config:/etc/cloudflared
   traefik:
@@ -12,6 +15,7 @@ services:
     container_name: "traefik"
     networks:
       - tunnel
+      - internal
 #    command:
 #      #- "--log.level=DEBUG"
 #      - "--api.insecure=true"
@@ -27,3 +31,6 @@ services:
       - "./traefik_config/certs:/certs"
 networks:
   tunnel:
+    external: true
+  default:
+    internal: true
