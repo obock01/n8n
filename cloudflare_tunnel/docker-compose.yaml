@@ -5,7 +5,7 @@ services:
     container_name: cloudflare_tunnel
     image: cloudflare/cloudflared:latest
     restart: always
-    command: tunnel run --logfile /logs/cloudflared.log --loglevel info --transport-loglevel info
+    command: tunnel --logfile /logs/cloudflared.log --loglevel info --transport-loglevel info run
     networks:
       - tunnel
       - default
