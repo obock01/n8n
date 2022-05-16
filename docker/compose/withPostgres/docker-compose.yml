@@ -40,13 +40,13 @@ services:
       - N8N_BINARY_DATA_STORAGE_PATH=/n8n_data
       - N8N_HIRING_BANNER_ENABLED=false
     labels:
-      hera.hostname: n8n.ocproxy.net
-      hera.port: '5678'
+      - traefik.http.routers.n8n.rule=Host(`n8n-lb.ocproxy.net`)
+      - traefik.http.services.n8n-service.loadbalancer.server.port=5678
     ports:
       - 5678:5678
     networks:
       - default
-      - hera_tunnel
+      - tunnel
     links:
       - postgres
     volumes:
@@ -58,5 +58,5 @@ services:
 networks:
   default:
     internal: true
-  hera_tunnel:
+  tunnel:
     external: true
