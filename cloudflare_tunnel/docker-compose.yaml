@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  tunnel:
+    container_name: cloudflare_tunnel
+    image: cloudflare/cloudflared:latest
+    restart: always
+    volumes:
+      - ./cloudflare_config:/etc/cloudflared
+  traefik:
+    image: "traefik:v2.6"
+    container_name: "traefik"
+    networks:
+      - tunnel
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+networks:
+  tunnel:

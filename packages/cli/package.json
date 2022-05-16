@@ -92,6 +92,7 @@
     "typescript": "~4.6.0"
   },
   "dependencies": {
+    "localtunnel": "^2.0.2",
     "@oclif/command": "^1.5.18",
     "@oclif/errors": "^1.2.2",
     "@rudderstack/rudder-sdk-node": "1.0.6",
