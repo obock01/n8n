@@ -8,7 +8,7 @@ services:
     networks:
       - tunnel
     ports:
-      - "5572:5572"
+      - 5572:5572
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rclone.rule=Host(`rclone.ocproxy.net`)"
@@ -26,6 +26,9 @@ services:
     restart: always
     networks:
       - default
+      - tunnel
+    ports:
+      - 127.0.0.1:54320:5432
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -42,6 +45,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.n8n.rule=Host(`n8n.ocproxy.net`)"
+      - "traefik.http.routers.n8n.service=n8n-service"
       - "traefik.http.services.n8n-service.loadbalancer.server.port=5678"
     environment:
       - DB_TYPE=postgresdb
@@ -68,6 +72,9 @@ services:
       - N8N_CUSTOM_EXTENSIONS=/custom_nodes
       - GENERIC_TIMEZONE=America/Chicago
       - N8N_HIRING_BANNER_ENABLED=false
+      - N8N_EDITOR_BASE_URL=https://n8n.ocproxy.net
+      - WEBHOOK_URL=https://n8n.ocproxy.net/
+      - N8N_HOST=n8n.ocproxy.net
     ports:
       - 5678:5678
     links:

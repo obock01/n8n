@@ -29,7 +29,7 @@ services:
       - "8080:8080"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.ocproxy.net `) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.ocproxy.net`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.services.dashboard-service.loadbalancer.server.port=8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -37,6 +37,60 @@ services:
       - "./traefik_config/config/config.yaml:/etc/traefik/traefik.yml"
       - "./traefik_config/config/dynamic_config.yaml:/config/dynamic_config.yaml"
       - "./traefik_config/certs:/certs"
+  rustdesk_session:
+    container_name: session_server
+    restart: always
+    image: "rustdesk/rustdesk-server:latest"
+    command: hbbs
+    networks:
+      - default
+      - tunnel
+    ports:
+      - "21115:21115"
+      - "21116:21116"
+      - "21116:21116/udp"
+      - "21118:21118"
+    volumes:
+      - "/opt/docker-apps/rustdesk/config:/root"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.udp.routers.idregrouter.entrypoints=rustdeskudp1"
+      - "traefik.udp.routers.idregrouter.service=idregservice"
+      - "traefik.udp.services.idregservice.loadbalancer.server.port=21116"
+      - "traefik.tcp.routers.rdrouter1.entrypoints=rustdesktcp1"
+      - "traefik.tcp.routers.rdrouter1.rule=HostSNI(`remote.ocproxy.net`)"
+      - "traefik.tcp.routers.rdrouter1.service=rdsvc1"
+      - "traefik.tcp.services.rdsvc1.loadbalancer.server.port=21115"
+      - "traefik.tcp.routers.rdrouter2.entrypoints=rustdesktcp2"
+      - "traefik.tcp.routers.rdrouter2.rule=HostSNI(`remote.ocproxy.net`)"
+      - "traefik.tcp.routers.rdrouter2.service=rdsvc2"
+      - "traefik.tcp.services.rdsvc2.loadbalancer.server.port=21116"
+      - "traefik.tcp.routers.rdrouter4.entrypoints=rustdesktcp4"
+      - "traefik.tcp.routers.rdrouter4.rule=HostSNI(`remote.ocproxy.net`)"
+      - "traefik.tcp.routers.rdrouter4.service=rdsvc4"
+      - "traefik.tcp.services.rdsvc4.loadbalancer.server.port=21118"
+
+  rustdesk_relay:
+    container_name: relay_server
+    restart: always
+    command: hbbr
+    networks:
+      - default
+      - tunnel
+    ports:
+      - "21117:21117"
+      - "21119:21119"
+    volumes:
+      - "/opt/docker-apps/rustdesk/config:/root"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.rdrouter3.rule=HostSNI(`remote.ocproxy.net`)"
+      - "traefik.tcp.routers.rdrouter3.service=rdsvc3"
+      - "traefik.tcp.services.rdsvc3.loadbalancer.server.port=21117"
+      - "traefik.tcp.routers.rdrouter5.entrypoints=rustdesktcp2"
+      - "traefik.tcp.routers.rdrouter5.rule=HostSNI(`remote.ocproxy.net`)"
+      - "traefik.tcp.routers.rdrouter5.service=rdsvc5"
+      - "traefik.tcp.services.rdsvc5.loadbalancer.server.port=21119"
 networks:
   tunnel:
     external: true

@@ -37,6 +37,18 @@ entryPoints:
         readTimeout: 42s
         writeTimeout: 42s
         idleTimeout: 42s
+  rustdesktcp1:
+    address: ':21115'
+  rustdesktcp2:
+    address: ':21116'
+  rustdesktcp3:
+    address: ':21117'
+  rustdesktcp4:
+    address: ':21118'
+  rustdesktcp5:
+    address: ':21119'
+  rustdeskudp1:
+    address: ':21116/udp'
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
