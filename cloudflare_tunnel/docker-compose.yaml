@@ -85,10 +85,11 @@ services:
       - "/opt/docker-apps/rustdesk/config:/root"
     labels:
       - "traefik.enable=true"
+      - "traefik.tcp.routers.rdrouter3.entrypoints=rustdesktcp3"
       - "traefik.tcp.routers.rdrouter3.rule=HostSNI(`remote.ocproxy.net`)"
       - "traefik.tcp.routers.rdrouter3.service=rdsvc3"
       - "traefik.tcp.services.rdsvc3.loadbalancer.server.port=21117"
-      - "traefik.tcp.routers.rdrouter5.entrypoints=rustdesktcp2"
+      - "traefik.tcp.routers.rdrouter5.entrypoints=rustdesktcp5"
       - "traefik.tcp.routers.rdrouter5.rule=HostSNI(`remote.ocproxy.net`)"
       - "traefik.tcp.routers.rdrouter5.service=rdsvc5"
       - "traefik.tcp.services.rdsvc5.loadbalancer.server.port=21119"
