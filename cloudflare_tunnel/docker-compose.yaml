@@ -72,6 +72,7 @@ services:
 
   rustdesk_relay:
     container_name: relay_server
+    image: "rustdesk/rustdesk-server:latest"
     restart: always
     command: hbbr
     networks:
